@@ -24,7 +24,7 @@ fs.readdir(folderPath, { withFileTypes: true }, (err, objects) => {
         const fileExt = fileInfo.ext.slice(1);
         const fileSizeKB = `${(statsSize / 1024).toFixed(2)}kb`;
 
-        const outputStr = `${fileName} ${fileExt} ${fileSizeKB}\n`;
+        const outputStr = `${fileName} - ${fileExt} - ${fileSizeKB}\n`;
 
         stdout.write(outputStr);
       }
