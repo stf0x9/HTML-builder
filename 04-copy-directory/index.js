@@ -9,16 +9,16 @@ fs.access(filesCopyPath, (noAccess) => {
     addCopy();
     return;
   } else {
-    fs.rm(filesCopyPath, {recursive: true}, (rmErr) => {
+    fs.rm(filesCopyPath, { recursive: true }, (rmErr) => {
       if (rmErr) {
         console.error(rmErr);
         return;
       }
       addCopy();
       return;
-    })
+    });
   }
-})
+});
 
 function addCopy() {
   fs.mkdir(filesCopyPath, { recursive: true }, (mkdirErr) => {
@@ -47,5 +47,3 @@ function addCopy() {
     });
   });
 }
-
-
