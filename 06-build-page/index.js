@@ -7,13 +7,14 @@ const distFolderPath = path.join(__dirname, 'project-dist');
 const stylesPath = path.join(__dirname, 'styles');
 const assetsPath = path.join(__dirname, 'assets');
 
-const stylesBundlePath = path.join(distFolderPath, 'styles.css');
+const stylesBundlePath = path.join(distFolderPath, 'style.css');
 const assetsBundleFolderPath = path.join(distFolderPath, 'assets');
 
 async function bundle() {
   await createDistFolder();
   await bundleCSS();
   await copyAssets();
+  await assembleHTML();
   console.log('Bundle complete!');
 }
 
@@ -82,4 +83,37 @@ async function copyFiles(files) {
     );
     fsPromises.copyFile(filePath, targetFilePath);
   }
+}
+
+async function assembleHTML() {
+  const htmlBundleFilePath = path.join(distFolderPath, 'index.html');
+  const data = await getAssembledHtmlData();
+  await fsPromises.writeFile(htmlBundleFilePath, data);
+  console.log('html assemble finished');
+}
+
+async function getAssembledHtmlData() {
+  const templateFilePath = path.join(__dirname, 'template.html');
+  let data = await fsPromises.readFile(templateFilePath, { encoding: 'utf-8' });
+  const tagRegEx = /\{\{([^{}]+)\}\}/g;
+  const matches = data.matchAll(tagRegEx);
+
+  for (let match of matches) {
+    const templateTag = match[0];
+    const componentName = match[1];
+
+    const componentFilePath = path.join(__dirname, 'components', componentName);
+
+    try {
+      const componentContent = await fsPromises.readFile(
+        `${componentFilePath}.html`,
+        { encoding: 'utf-8' },
+      );
+      data = data.replace(templateTag, componentContent);
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+  return data;
 }
