@@ -74,14 +74,16 @@ async function createDirectories(directories) {
 
 async function copyFiles(files) {
   for (let file of files) {
-    const filePath = path.join(file.path, file.name);
-    const baseDir = path.parse(file.path).base;
-    const targetFilePath = path.join(
-      assetsBundleFolderPath,
-      baseDir,
-      file.name,
-    );
-    fsPromises.copyFile(filePath, targetFilePath);
+    if (!isMacOsJunk(file.name)) {
+      const filePath = path.join(file.path, file.name);
+      const baseDir = path.parse(file.path).base;
+      const targetFilePath = path.join(
+        assetsBundleFolderPath,
+        baseDir,
+        file.name,
+      );
+      fsPromises.copyFile(filePath, targetFilePath);
+    }
   }
 }
 
@@ -116,4 +118,8 @@ async function getAssembledHtmlData() {
     }
   }
   return data;
+}
+
+function isMacOsJunk(fileName) {
+  return fileName.startsWith('.');
 }
